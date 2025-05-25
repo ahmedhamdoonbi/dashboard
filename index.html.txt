@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My BI Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+  <header class="text-center mb-6">
+    <h1 class="text-4xl font-bold text-blue-700">📊 EIPICO Dashboard</h1>
+    <p class="text-gray-600 mt-2">Interactive Power BI Report</p>
+  </header>
+
+  <section class="w-full max-w-6xl shadow-lg rounded-xl overflow-hidden border border-gray-300">
+    <iframe 
+      title="Eipico Dashboard"
+      width="100%" 
+      height="600"
+      src="https://app.powerbi.com/view?r=eyJrIjoiOTNkODk1NDctYTk2Ny00OWJhLTkyNjgtYTc5OGIyYTgyMWNiIiwidCI6IjZkYzNiZmNjLWI3ODYtNDYzYy05MDhmLWM1Y2U5YzhmNzA2YSJ9"
+      frameborder="0" 
+      allowFullScreen="true"
+      class="w-full"
+    ></iframe>
+  </section>
+
+  <footer class="mt-10 text-sm text-gray-500">
+    &copy; 2025 Ahmed Hamdoon. All rights reserved.
+  </footer>
+</body>
+</html>
