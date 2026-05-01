@@ -1,263 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🌍 To-Market 2026 — EIPICO</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login System</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+body {
+  font-family: Arial;
+  background:#f0f4fc;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
 
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.card {
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  width:300px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
 
-    :root {
-      --blue: #1a56db;
-      --blue-dark: #1240a8;
-      --accent: #f59e0b;
-      --bg: #f0f4fc;
-      --card: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
-    }
+input {
+  width:100%;
+  padding:8px;
+  margin:5px 0;
+}
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem 1rem 3rem;
-      color: var(--text);
-    }
+button {
+  width:100%;
+  padding:8px;
+  background:#1a56db;
+  color:white;
+  border:none;
+  margin-top:10px;
+  cursor:pointer;
+}
 
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
+.toggle {
+  display:flex;
+  gap:5px;
+  margin-bottom:10px;
+}
 
-    .logo-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-      background: var(--blue);
-      color: #fff;
-      font-size: .75rem;
-      font-weight: 700;
-      padding: .35rem .9rem;
-      border-radius: 999px;
-      margin-bottom: 1rem;
-    }
+.toggle button {
+  background:#ddd;
+  color:black;
+}
 
-    h1 {
-      font-size: 2rem;
-      color: var(--blue-dark);
-    }
-
-    .subtitle {
-      margin-top: .5rem;
-      color: var(--muted);
-    }
-
-    /* AUTH */
-    .auth-card {
-      width: 100%;
-      max-width: 420px;
-      background: var(--card);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.05);
-    }
-
-    .auth-card input {
-      width: 100%;
-      padding: .6rem;
-      margin-bottom: .7rem;
-      border-radius: .5rem;
-      border: 1px solid var(--border);
-    }
-
-    .auth-card button {
-      width: 100%;
-      padding: .6rem;
-      border: none;
-      border-radius: .5rem;
-      background: var(--blue);
-      color: white;
-      cursor: pointer;
-    }
-
-    .toggle-buttons {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 1rem;
-    }
-
-    .toggle-buttons button {
-      flex: 1;
-      background: #e2e8f0;
-      color: var(--text);
-    }
-
-    /* DASHBOARD */
-    .card {
-      width: 100%;
-      max-width: 1280px;
-      background: var(--card);
-      border-radius: 1.25rem;
-      overflow: hidden;
-      display: none;
-    }
-
-    .card-bar {
-      background: var(--blue);
-      color: white;
-      padding: 1rem;
-    }
-
-    .iframe-wrap {
-      position: relative;
-      padding-top: 56.25%;
-    }
-
-    iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .loader {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: white;
-    }
-
-    footer {
-      margin-top: 2rem;
-      font-size: .8rem;
-      color: var(--muted);
-    }
-  </style>
+.hidden {
+  display:none;
+}
+</style>
 </head>
 
 <body>
 
-<header>
-  <div class="logo-badge">EIPICO · Business Excellence</div>
-  <h1>🌍 To-Market 2026</h1>
-  <p class="subtitle">Interactive Power BI Report</p>
-</header>
+<div class="card">
 
-<!-- AUTH -->
-<section class="auth-card">
-
-  <div class="toggle-buttons">
+  <div class="toggle">
     <button onclick="showLogin()">Login</button>
     <button onclick="showRegister()">Register</button>
   </div>
 
+  <!-- LOGIN -->
   <div id="loginForm">
-    <input id="loginEmail" type="email" placeholder="Company Email" />
-    <input id="loginPassword" type="password" placeholder="Password" />
+    <input id="loginEmail" type="email" placeholder="Email">
+    <input id="loginPassword" type="password" placeholder="Password">
     <button onclick="login()">Login</button>
   </div>
 
-  <div id="registerForm" style="display:none;">
-    <input id="regName" type="text" placeholder="User Name" />
-    <input id="regEmail" type="email" placeholder="Company Email" />
-    <input id="regPassword" type="password" placeholder="Create Password" />
-    <button onclick="register()">Create Account</button>
+  <!-- REGISTER -->
+  <div id="registerForm" class="hidden">
+    <input id="regName" type="text" placeholder="User Name">
+    <input id="regEmail" type="email" placeholder="Email">
+    <input id="regPassword" type="password" placeholder="Password">
+    <button onclick="register()">Register</button>
   </div>
 
-</section>
-
-<!-- DASHBOARD -->
-<section class="card" id="dashboard">
-
-  <div class="card-bar">Power BI — To-Market 2026</div>
-
-  <div class="iframe-wrap">
-
-    <div class="loader" id="loader">Loading...</div>
-
-    <iframe
-      id="pbi"
-      src="https://app.fabric.microsoft.com/view?r=eyJrIjoiZTM2YjYxNzctZWQyMS00NGI0LTk4OGUtZDBiYWRmMGM4MDc2IiwidCI6IjZkYzNiZmNjLWI3ODYtNDYzYy05MDhmLWM1Y2U5YzhmNzA2YSJ9"
-      onload="iframeLoaded()">
-    </iframe>
-
-  </div>
-</section>
-
-<footer>
-  © 2026 Business Excellence @EIPICO
-</footer>
+</div>
 
 <script>
+
 // toggle
 function showLogin(){
-  loginForm.style.display="block";
-  registerForm.style.display="none";
+  loginForm.classList.remove("hidden");
+  registerForm.classList.add("hidden");
 }
 
 function showRegister(){
-  loginForm.style.display="none";
-  registerForm.style.display="block";
-}
-
-// login
-async function login(){
-  const res = await fetch("http://localhost:3000/login",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      email:loginEmail.value,
-      password:loginPassword.value
-    })
-  });
-
-  const data = await res.json();
-
-  if(data.token){
-    localStorage.setItem("token",data.token);
-    dashboard.style.display="block";
-    document.querySelector(".auth-card").style.display="none";
-  }else{
-    alert("Login failed");
-  }
+  loginForm.classList.add("hidden");
+  registerForm.classList.remove("hidden");
 }
 
 // register
-async function register(){
-  const res = await fetch("http://localhost:3000/register",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      name:regName.value,
-      email:regEmail.value,
-      password:regPassword.value
-    })
-  });
+function register(){
+  const user = {
+    name: regName.value,
+    email: regEmail.value,
+    password: regPassword.value
+  };
 
-  if(res.status===201){
-    alert("Account created");
-    showLogin();
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+
+  // check exists
+  if(users.find(u => u.email === user.email)){
+    alert("User already exists");
+    return;
+  }
+
+  users.push(user);
+  localStorage.setItem("users", JSON.stringify(users));
+
+  alert("Registered successfully 🎉");
+  showLogin();
+}
+
+// login
+function login(){
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+
+  const user = users.find(
+    u => u.email === loginEmail.value && u.password === loginPassword.value
+  );
+
+  if(user){
+    alert("Welcome " + user.name + " 🚀");
   }else{
-    alert("Registration failed");
+    alert("Invalid credentials");
   }
 }
 
-// loader
-function iframeLoaded(){
-  loader.style.display="none";
-}
 </script>
 
 </body>
