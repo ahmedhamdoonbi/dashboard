@@ -2,12 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EIPICO Dashboard</title>
 
 <style>
-body {
-  font-family: Arial;
+body{
+  font-family:Arial;
   background:#f0f4fc;
   display:flex;
   flex-direction:column;
@@ -16,147 +15,104 @@ body {
   height:100vh;
 }
 
-/* AUTH CARD */
-.auth-card {
+.card{
   background:white;
   padding:20px;
-  border-radius:12px;
+  border-radius:10px;
   width:320px;
   box-shadow:0 10px 30px rgba(0,0,0,0.1);
-  margin-bottom:20px;
 }
 
-input {
+input{
   width:100%;
-  padding:10px;
-  margin:6px 0;
-  border-radius:6px;
-  border:1px solid #ddd;
+  padding:8px;
+  margin:5px 0;
 }
 
-button {
+button{
   width:100%;
-  padding:10px;
-  border:none;
-  border-radius:6px;
+  padding:8px;
+  margin-top:5px;
   background:#1a56db;
   color:white;
-  font-weight:bold;
+  border:none;
   cursor:pointer;
 }
 
-.toggle {
-  display:flex;
-  gap:10px;
-  margin-bottom:10px;
-}
-
-.toggle button {
-  background:#ddd;
-  color:black;
-}
-
-/* DASHBOARD */
-#dashboard {
-  display:none;
-  width:80%;
-  max-width:900px;
-}
-
-iframe {
-  width:100%;
-  height:500px;
-  border:none;
-  border-radius:10px;
-}
+.hidden{display:none;}
 </style>
 </head>
 
 <body>
 
-<h2>🌍 To-Market 2026</h2>
+<h2>🌍 Dashboard Login</h2>
 
-<!-- AUTH -->
-<div class="auth-card">
+<div class="card">
 
-  <div class="toggle">
-    <button onclick="showLogin()">Login</button>
-    <button onclick="showRegister()">Register</button>
-  </div>
+  <button onclick="showLogin()">Login</button>
+  <button onclick="showRegister()">Register</button>
 
   <!-- LOGIN -->
   <div id="loginForm">
-    <input id="loginEmail" type="email" placeholder="Company Email">
+    <input id="loginEmail" placeholder="Email">
     <input id="loginPassword" type="password" placeholder="Password">
     <button onclick="login()">Login</button>
   </div>
 
   <!-- REGISTER -->
-  <div id="registerForm" style="display:none;">
-    <input id="regName" type="text" placeholder="User Name">
-    <input id="regEmail" type="email" placeholder="Company Email">
-    <input id="regPassword" type="password" placeholder="Create Password">
-    <button onclick="register()">Create Account</button>
+  <div id="registerForm" class="hidden">
+    <input id="regName" placeholder="Name">
+    <input id="regEmail" placeholder="Email">
+    <input id="regPassword" type="password" placeholder="Password">
+    <button onclick="register()">Register</button>
   </div>
 
 </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard">
+<div id="dashboard" class="hidden">
+  <h3>Welcome 🎉</h3>
   <iframe src="https://app.powerbi.com/view?r=eyJrIjoiZTM2YjYxNzctZWQyMS00NGI0LTk4OGUtZDBiYWRmMGM4MDc2IiwidCI6IjZkYzNiZmNjLWI3ODYtNDYzYy05MDhmLWM1Y2U5YzhmNzA2YSJ9"></iframe>
-  <br><br>
-  <button onclick="logout()">Logout</button>
 </div>
 
 <script>
 
-// 🔁 toggle forms
+// admin (غيره براحتك)
+const ADMIN_EMAIL = "admin@eipico.net";
+
+// toggle
 function showLogin(){
-  loginForm.style.display="block";
-  registerForm.style.display="none";
+  loginForm.classList.remove("hidden");
+  registerForm.classList.add("hidden");
 }
 
 function showRegister(){
-  loginForm.style.display="none";
-  registerForm.style.display="block";
+  loginForm.classList.add("hidden");
+  registerForm.classList.remove("hidden");
 }
 
-// 🆕 REGISTER
+// register
 function register(){
-  const name = regName.value.trim();
-  const email = regEmail.value.trim();
-  const password = regPassword.value.trim();
-
-  if(!name || !email || !password){
-    alert("Please fill all fields");
-    return;
-  }
-
-  if(!email.endsWith("@eipico.net")){
-    alert("Use company email only");
-    return;
-  }
-
   let users = JSON.parse(localStorage.getItem("users")) || [];
 
-  if(users.find(u => u.email === email)){
-    alert("User already exists");
+  const user = {
+    name: regName.value,
+    email: regEmail.value,
+    password: regPassword.value,
+    approved: false
+  };
+
+  if(users.find(u => u.email === user.email)){
+    alert("User exists");
     return;
   }
 
-  users.push({name,email,password});
+  users.push(user);
   localStorage.setItem("users", JSON.stringify(users));
 
-  alert("Account created 🎉");
-
-  // autofill login
-  loginEmail.value = email;
-  loginPassword.value = password;
-
-  showLogin();
+  alert("Registered. Waiting for admin approval.");
 }
 
-// 🔐 LOGIN
+// login
 function login(){
   let users = JSON.parse(localStorage.getItem("users")) || [];
 
@@ -164,31 +120,55 @@ function login(){
     u => u.email === loginEmail.value && u.password === loginPassword.value
   );
 
-  if(user){
-    localStorage.setItem("loggedUser", JSON.stringify(user));
-
-    document.querySelector(".auth-card").style.display="none";
-    dashboard.style.display="block";
-
-  }else{
-    alert("Invalid credentials");
+  if(!user){
+    alert("Wrong email/password");
+    return;
   }
+
+  if(!user.approved){
+    alert("Pending admin approval");
+    return;
+  }
+
+  dashboard.classList.remove("hidden");
+  document.querySelector(".card").classList.add("hidden");
 }
 
-// 🚪 LOGOUT
-function logout(){
-  localStorage.removeItem("loggedUser");
+// 🔥 ADMIN PANEL (hidden)
+if(localStorage.getItem("adminMode")){
+  showAdminPanel();
+}
+
+function showAdminPanel(){
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+
+  let html = "<h3>Admin Panel</h3>";
+
+  users.forEach((u,i)=>{
+    if(!u.approved){
+      html += `
+        <div>
+          ${u.email}
+          <button onclick="approve(${i})">Approve</button>
+        </div>
+      `;
+    }
+  });
+
+  document.body.innerHTML = html;
+}
+
+function approve(index){
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  users[index].approved = true;
+  localStorage.setItem("users", JSON.stringify(users));
   location.reload();
 }
 
-// 🔄 auto login if already logged
-window.onload = function(){
-  const user = JSON.parse(localStorage.getItem("loggedUser"));
-
-  if(user){
-    document.querySelector(".auth-card").style.display="none";
-    dashboard.style.display="block";
-  }
+// secret admin access 😎
+if(window.location.hash === "#admin"){
+  localStorage.setItem("adminMode", true);
+  showAdminPanel();
 }
 
 </script>
