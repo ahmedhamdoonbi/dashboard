@@ -65,10 +65,29 @@
         border-radius: 50%;
         animation: pulse 1.8s infinite;
       }
+      
+      /* Header & Logo Fixes */
+      h1.main-title {
+        font-size: 1.7rem; 
+        font-weight: 700; 
+        color: var(--blue-dark); 
+        letter-spacing: -.02em; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 0.5rem;
+        white-space: nowrap;
+      }
+      .eipico-logo { 
+        height: 38px; 
+        width: 38px;
+        object-fit: contain; 
+        border-radius: 50%;
+      }
+
       /* ── AUTH ── */
       #auth-screen { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; }
       #auth-screen header { text-align: center; margin-bottom: 2rem; }
-      #auth-screen h1 { font-size: 2rem; font-weight: 700; color: var(--blue-dark); letter-spacing: -.02em; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
       #auth-screen .subtitle { margin-top: .4rem; color: var(--muted); font-size: .95rem; }
       .auth-card {
         width: 100%;
@@ -112,6 +131,7 @@
       .msg.error { background: #fef2f2; color: var(--red); }
       .msg.success { background: #f0fdf4; color: var(--green); }
       .msg.info { background: #eff6ff; color: var(--blue); }
+      
       /* ── PENDING ── */
       #pending-screen {
         display: none; flex-direction: column; align-items: center; text-align: center; gap: 1rem;
@@ -121,6 +141,7 @@
       #pending-screen .big-icon { font-size: 3rem; }
       #pending-screen h2 { font-size: 1.3rem; color: var(--blue-dark); }
       #pending-screen p { color: var(--muted); font-size: .9rem; }
+      
       /* ── ADMIN ── */
       #admin-screen { display: none; width: 100%; max-width: 860px; flex-direction: column; gap: 1.5rem; animation: fadeUp .6s ease-out both; }
       .admin-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
@@ -137,10 +158,10 @@
       .badge-approved { background: #dcfce7; color: #166534; }
       .badge-rejected { background: #fee2e2; color: #991b1b; }
       .empty-state { padding: 2rem; text-align: center; color: var(--muted); font-size: .9rem; }
+      
       /* ── DASHBOARD ── */
       #dashboard-screen { display: none; width: 100%; max-width: 1280px; flex-direction: column; animation: fadeUp .6s ease-out both; }
       #dashboard-screen header { text-align: center; margin-bottom: 1.75rem; }
-      #dashboard-screen h1 { font-size: clamp(1.75rem, 5vw, 2.6rem); font-weight: 700; color: var(--blue-dark); letter-spacing: -.02em; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
       .dash-topbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; margin-bottom: 1rem; }
       .welcome-pill { background: #eff6ff; color: var(--blue-dark); font-size: .85rem; font-weight: 600; padding: .4rem 1rem; border-radius: 999px; }
       .card { background: var(--card); border: 1px solid var(--border); border-radius: 1.25rem; box-shadow: 0 8px 40px rgba(26,86,219,.10); overflow: hidden; }
@@ -162,14 +183,16 @@
       .error-banner h2 { font-size: 1.15rem; color: var(--blue-dark); }
       .error-banner p { color: var(--muted); font-size: .9rem; max-width: 380px; }
       footer { margin-top: 2rem; font-size: .8rem; color: var(--muted); text-align: center; }
-      .eipico-logo { height: 1.2em; width: auto; object-fit: contain; }
     </style>
   </head>
   <body>
     <div id="auth-screen">
       <header class="anim">
         <div class="logo-badge"><span class="dot"></span>EIPICO · Business Excellence</div>
-        <h1><img src="1000206495.jpg" alt="EIPICO Logo" class="eipico-logo">To-Market 2026</h1>
+        <h1 class="main-title">
+          <img src="https://i.ibb.co/Cs43gs8m/1000206495.jpg" alt="EIPICO Logo" class="eipico-logo">
+          To-Market 2026
+        </h1>
         <p class="subtitle">Sign in to access the dashboard</p>
       </header>
       <div class="auth-card">
@@ -229,7 +252,10 @@
     <div id="dashboard-screen">
       <header class="anim">
         <div class="logo-badge"><span class="dot"></span>EIPICO · Business Excellence</div>
-        <h1><img src="1000206495.jpg" alt="EIPICO Logo" class="eipico-logo">To-Market 2026</h1>
+        <h1 class="main-title">
+          <img src="https://i.ibb.co/Cs43gs8m/1000206495.jpg" alt="EIPICO Logo" class="eipico-logo">
+          To-Market 2026
+        </h1>
         <p style="margin-top:.4rem;color:var(--muted);font-size:1rem">Interactive Power BI Report</p>
       </header>
       <div class="dash-topbar anim">
