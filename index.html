@@ -3,14 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <title>EIPICO Dashboard</title>
+
 <style>
-body {font-family: Arial; background:#f4f6fb; text-align:center; padding:40px;}
-.card {background:#fff; padding:20px; border-radius:12px; width:300px; margin:auto; box-shadow:0 10px 30px rgba(0,0,0,.1);}
-input {width:100%; padding:10px; margin:8px 0;}
-button {padding:10px; width:100%; background:#1a56db; color:#fff; border:none; border-radius:8px; cursor:pointer;}
-.admin {margin-top:40px;}
-.user {background:#eee; margin:5px; padding:10px;}
-.logo {font-size:20px; font-weight:bold; margin-bottom:10px;}
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg,#1a56db,#0f172a);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  margin:0;
+}
+
+.card {
+  background:#fff;
+  padding:30px;
+  border-radius:16px;
+  width:320px;
+  box-shadow:0 20px 50px rgba(0,0,0,.2);
+  text-align:center;
+}
+
+.logo {
+  font-size:22px;
+  font-weight:bold;
+  margin-bottom:20px;
+  color:#1a56db;
+}
+
+input {
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+
+button {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+  background:#1a56db;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#message {
+  margin-top:10px;
+  font-size:14px;
+  color:#555;
+}
+
+.admin {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#fff;
+  padding:15px;
+  border-radius:12px;
+  width:260px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+
+.user {
+  background:#f1f5f9;
+  padding:8px;
+  margin:6px 0;
+  border-radius:6px;
+  display:flex;
+  justify-content:space-between;
+}
 </style>
 </head>
 
@@ -24,10 +89,12 @@ button {padding:10px; width:100%; background:#1a56db; color:#fff; border:none; b
 
   <button onclick="register()">Register</button>
   <button onclick="login()">Login</button>
+
+  <div id="message"></div>
 </div>
 
 <div id="adminPanel" class="admin" style="display:none;">
-  <h3>Pending Requests</h3>
+  <h4>Pending Requests</h4>
   <div id="pending"></div>
 </div>
 
@@ -39,92 +106,99 @@ import { getFirestore, setDoc, doc, getDocs, collection, updateDoc }
 from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID"
+  apiKey: "AIzaSyB-uY3a89crvxT7vTtU_le3vHsNp6d5KvY",
+  authDomain: "to-market-dashboard.firebaseapp.com",
+  projectId: "to-market-dashboard"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 
-const ADMIN_EMAIL = "YOUR_EMAIL";
+const ADMIN_EMAIL = "ahmd.hamdoon@gmail.com";
 
-// 🔐 Register
+// register
 window.register = async function() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = emailInput.value;
+  const password = passwordInput.value;
 
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-  const user = userCredential.user;
+  try {
+    const user = await createUserWithEmailAndPassword(auth, email, password);
 
-  await setDoc(doc(db, "users", user.uid), {
-    email: email,
-    approved: false
-  });
-
-  alert("Request sent for approval");
-};
-
-// 🔓 Login
-window.login = async function() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const userCredential = await signInWithEmailAndPassword(auth, email, password);
-  const user = userCredential.user;
-
-  if (email === ADMIN_EMAIL) {
-    loadPending();
-    document.getElementById("adminPanel").style.display = "block";
-    alert("Welcome Admin");
-  } else {
-    const docSnap = await getDocs(collection(db, "users"));
-    let approved = false;
-
-    docSnap.forEach(d => {
-      if (d.id === user.uid && d.data().approved) {
-        approved = true;
-      }
+    await setDoc(doc(db, "users", user.user.uid), {
+      email: email,
+      approved: false
     });
 
-    if (approved) {
-      alert("Welcome to dashboard");
-    } else {
-      alert("Waiting for approval");
-    }
+    message.innerText = "⏳ Waiting for approval";
+  } catch (e) {
+    message.innerText = e.message;
   }
 };
 
-// 👑 Admin Load Pending
+// login
+window.login = async function() {
+  const email = emailInput.value;
+  const password = passwordInput.value;
+
+  try {
+    const user = await signInWithEmailAndPassword(auth, email, password);
+
+    if (email === ADMIN_EMAIL) {
+      message.innerText = "👑 Admin Mode";
+      adminPanel.style.display = "block";
+      loadPending();
+    } else {
+      const snapshot = await getDocs(collection(db, "users"));
+      let approved = false;
+
+      snapshot.forEach(d => {
+        if (d.id === user.user.uid && d.data().approved) approved = true;
+      });
+
+      if (approved) {
+        message.innerText = "✅ Access granted";
+      } else {
+        message.innerText = "❌ Not approved yet";
+      }
+    }
+
+  } catch (e) {
+    message.innerText = e.message;
+  }
+};
+
+// load pending
 async function loadPending() {
   const snapshot = await getDocs(collection(db, "users"));
-  const container = document.getElementById("pending");
-  container.innerHTML = "";
+  pending.innerHTML = "";
 
   snapshot.forEach(d => {
-    const data = d.data();
-
-    if (!data.approved) {
+    if (!d.data().approved) {
       const div = document.createElement("div");
       div.className = "user";
       div.innerHTML = `
-        ${data.email}
-        <button onclick="approve('${d.id}')">Approve</button>
+        ${d.data().email}
+        <button onclick="approve('${d.id}')">✔</button>
       `;
-      container.appendChild(div);
+      pending.appendChild(div);
     }
   });
 }
 
-// ✅ Approve
+// approve
 window.approve = async function(id) {
-  await updateDoc(doc(db, "users", id), {
-    approved: true
-  });
-  alert("Approved");
+  await updateDoc(doc(db, "users", id), { approved: true });
   loadPending();
 };
+
+// inputs shortcuts
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const message = document.getElementById("message");
+const adminPanel = document.getElementById("adminPanel");
+const pending = document.getElementById("pending");
+
 </script>
 
 </body>
