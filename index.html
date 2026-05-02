@@ -2,76 +2,135 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>EIPICO Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>To-Market Dashboard — EIPICO</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg,#1a56db,#0f172a);
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --blue:#1a56db;
+  --bg:#f0f4fc;
+  --card:#fff;
+  --text:#1e293b;
+  --muted:#64748b;
+  --border:#e2e8f0;
+}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
   display:flex;
   justify-content:center;
   align-items:center;
   min-height:100vh;
-  margin:0;
+  padding:20px;
 }
 
-.card {
-  background:#fff;
-  padding:30px;
-  border-radius:16px;
-  width:320px;
-  box-shadow:0 20px 50px rgba(0,0,0,.2);
+.container{
+  width:100%;
+  max-width:420px;
+}
+
+.header{
   text-align:center;
-}
-
-.logo {
-  font-size:22px;
-  font-weight:bold;
   margin-bottom:20px;
-  color:#1a56db;
 }
 
-input {
-  width:100%;
+.logo{
+  font-size:20px;
+  font-weight:700;
+  color:var(--blue);
+}
+
+.title{
+  font-size:26px;
+  font-weight:700;
+  margin-top:5px;
+}
+
+.subtitle{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:16px;
+  padding:25px;
+  box-shadow:0 10px 40px rgba(0,0,0,.1);
+}
+
+.tabs{
+  display:flex;
+  margin-bottom:20px;
+  border-bottom:2px solid var(--border);
+}
+
+.tab{
+  flex:1;
+  text-align:center;
+  padding:10px;
+  cursor:pointer;
+  font-weight:600;
+  color:var(--muted);
+}
+
+.tab.active{
+  color:var(--blue);
+  border-bottom:2px solid var(--blue);
+}
+
+.form{
+  display:none;
+  flex-direction:column;
+  gap:10px;
+}
+
+.form.active{
+  display:flex;
+}
+
+input{
   padding:12px;
-  margin:8px 0;
   border-radius:8px;
-  border:1px solid #ddd;
+  border:1px solid var(--border);
 }
 
-button {
-  width:100%;
+button{
   padding:12px;
-  margin-top:10px;
   border:none;
   border-radius:8px;
-  background:#1a56db;
+  background:var(--blue);
   color:#fff;
-  font-weight:bold;
+  font-weight:600;
   cursor:pointer;
 }
 
-#message {
+#message{
   margin-top:10px;
+  text-align:center;
   font-size:14px;
-  color:#555;
 }
 
-.admin {
+.admin{
   position:fixed;
   bottom:20px;
   right:20px;
   background:#fff;
   padding:15px;
   border-radius:12px;
-  width:260px;
+  width:250px;
   box-shadow:0 10px 30px rgba(0,0,0,.2);
+  display:none;
 }
 
-.user {
+.user{
   background:#f1f5f9;
   padding:8px;
-  margin:6px 0;
+  margin:5px 0;
   border-radius:6px;
   display:flex;
   justify-content:space-between;
@@ -81,124 +140,142 @@ button {
 
 <body>
 
-<div class="card">
-  <div class="logo">EIPICO Logo</div>
+<div class="container">
+  <div class="header">
+    <div class="logo">EIPICO Logo</div>
+    <div class="title">To-Market Dashboard</div>
+    <div class="subtitle">Secure access required</div>
+  </div>
 
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
+  <div class="card">
 
-  <button onclick="register()">Register</button>
-  <button onclick="login()">Login</button>
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('login')">Sign In</div>
+      <div class="tab" onclick="showTab('register')">Register</div>
+    </div>
 
-  <div id="message"></div>
+    <div id="login" class="form active">
+      <input id="loginEmail" placeholder="Email">
+      <input id="loginPass" type="password" placeholder="Password">
+      <button onclick="login()">Sign In</button>
+    </div>
+
+    <div id="register" class="form">
+      <input id="regEmail" placeholder="Email">
+      <input id="regPass" type="password" placeholder="Password">
+      <button onclick="register()">Request Access</button>
+    </div>
+
+    <div id="message"></div>
+
+  </div>
 </div>
 
-<div id="adminPanel" class="admin" style="display:none;">
-  <h4>Pending Requests</h4>
+<div id="adminPanel" class="admin">
+  <h4>Pending</h4>
   <div id="pending"></div>
 </div>
 
-<script>
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
-from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-import { getFirestore, setDoc, doc, getDocs, collection, updateDoc } 
-from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+<!-- Firebase (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 
+<script>
 const firebaseConfig = {
   apiKey: "AIzaSyB-uY3a89crvxT7vTtU_le3vHsNp6d5KvY",
   authDomain: "to-market-dashboard.firebaseapp.com",
   projectId: "to-market-dashboard"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
+firebase.initializeApp(firebaseConfig);
 
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// 👇 حط إيميلك هنا
 const ADMIN_EMAIL = "ahmd.hamdoon@gmail.com";
 
-// register
-window.register = async function() {
-  const email = emailInput.value;
-  const password = passwordInput.value;
+// UI tabs
+function showTab(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.form').forEach(f=>f.classList.remove('active'));
 
-  try {
-    const user = await createUserWithEmailAndPassword(auth, email, password);
-
-    await setDoc(doc(db, "users", user.user.uid), {
-      email: email,
-      approved: false
-    });
-
-    message.innerText = "⏳ Waiting for approval";
-  } catch (e) {
-    message.innerText = e.message;
+  if(tab==='login'){
+    document.getElementById('login').classList.add('active');
+    document.querySelectorAll('.tab')[0].classList.add('active');
+  }else{
+    document.getElementById('register').classList.add('active');
+    document.querySelectorAll('.tab')[1].classList.add('active');
   }
-};
+}
 
-// login
-window.login = async function() {
-  const email = emailInput.value;
-  const password = passwordInput.value;
+// Register
+function register(){
+  const email = regEmail.value;
+  const pass = regPass.value;
 
-  try {
-    const user = await signInWithEmailAndPassword(auth, email, password);
-
-    if (email === ADMIN_EMAIL) {
-      message.innerText = "👑 Admin Mode";
-      adminPanel.style.display = "block";
-      loadPending();
-    } else {
-      const snapshot = await getDocs(collection(db, "users"));
-      let approved = false;
-
-      snapshot.forEach(d => {
-        if (d.id === user.user.uid && d.data().approved) approved = true;
+  auth.createUserWithEmailAndPassword(email,pass)
+    .then(user=>{
+      return db.collection("users").doc(user.user.uid).set({
+        email:email,
+        approved:false
       });
+    })
+    .then(()=>{
+      message.innerText="⏳ Waiting for approval";
+    })
+    .catch(e=>message.innerText=e.message);
+}
 
-      if (approved) {
-        message.innerText = "✅ Access granted";
-      } else {
-        message.innerText = "❌ Not approved yet";
+// Login
+function login(){
+  const email = loginEmail.value;
+  const pass = loginPass.value;
+
+  auth.signInWithEmailAndPassword(email,pass)
+    .then(user=>{
+      if(email===ADMIN_EMAIL){
+        message.innerText="👑 Admin Mode";
+        adminPanel.style.display="block";
+        loadPending();
+      }else{
+        db.collection("users").doc(user.user.uid).get()
+        .then(doc=>{
+          if(doc.exists && doc.data().approved){
+            message.innerText="✅ Access granted";
+          }else{
+            message.innerText="❌ Not approved yet";
+          }
+        });
       }
-    }
+    })
+    .catch(e=>message.innerText=e.message);
+}
 
-  } catch (e) {
-    message.innerText = e.message;
-  }
-};
-
-// load pending
-async function loadPending() {
-  const snapshot = await getDocs(collection(db, "users"));
-  pending.innerHTML = "";
-
-  snapshot.forEach(d => {
-    if (!d.data().approved) {
-      const div = document.createElement("div");
-      div.className = "user";
-      div.innerHTML = `
-        ${d.data().email}
-        <button onclick="approve('${d.id}')">✔</button>
-      `;
-      pending.appendChild(div);
-    }
+// Admin load
+function loadPending(){
+  pending.innerHTML="";
+  db.collection("users").get().then(snapshot=>{
+    snapshot.forEach(doc=>{
+      if(!doc.data().approved){
+        const div=document.createElement("div");
+        div.className="user";
+        div.innerHTML=`
+          ${doc.data().email}
+          <button onclick="approve('${doc.id}')">✔</button>
+        `;
+        pending.appendChild(div);
+      }
+    });
   });
 }
 
-// approve
-window.approve = async function(id) {
-  await updateDoc(doc(db, "users", id), { approved: true });
-  loadPending();
-};
-
-// inputs shortcuts
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const message = document.getElementById("message");
-const adminPanel = document.getElementById("adminPanel");
-const pending = document.getElementById("pending");
-
+// Approve
+function approve(id){
+  db.collection("users").doc(id).update({approved:true})
+  .then(()=>loadPending());
+}
 </script>
 
 </body>
