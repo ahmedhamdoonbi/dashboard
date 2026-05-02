@@ -235,19 +235,35 @@ function login(){
 
   auth.signInWithEmailAndPassword(email,pass)
     .then(user=>{
-      if(email===ADMIN_EMAIL){
+      const uid = user.user.uid;
+
+      if(email === ADMIN_EMAIL){
         message.innerText="👑 Admin Mode";
         adminPanel.style.display="block";
         loadPending();
-      }else{
-        db.collection("users").doc(user.user.uid).get()
-        .then(doc=>{
-          if(doc.exists && doc.data().approved){
+      } else {
+
+        db.collection("users").doc(uid).get()
+        .then(doc => {
+
+          // 👇 لو مش موجود نضيفه
+          if(!doc.exists){
+            db.collection("users").doc(uid).set({
+              email: email,
+              approved: false
+            }).then(()=>{
+              message.innerText="⏳ Waiting for approval";
+            });
+          }
+
+          else if(doc.data().approved){
             message.innerText="✅ Access granted";
-          }else{
+          } else {
             message.innerText="❌ Not approved yet";
           }
+
         });
+
       }
     })
     .catch(e=>message.innerText=e.message);
