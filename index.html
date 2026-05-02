@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🌍 To-Market Dashboard 2026 — EIPICO</title>
+  <title>To-Market Dashboard 2026 — EIPICO</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
 
   <style>
@@ -66,6 +66,15 @@
       animation: pulse 1.8s infinite;
     }
 
+    .inline-logo {
+      height: 1.1em;
+      width: auto;
+      vertical-align: middle;
+      margin-top: -0.15em;
+      margin-right: 0.3rem;
+      border-radius: 50%;
+    }
+
     /* ── AUTH ── */
     #auth-screen {
       width: 100%;
@@ -111,7 +120,7 @@
     .auth-form.active { display: flex; }
 
     .field label { display: block; font-size: .82rem; font-weight: 600; color: var(--text); margin-bottom: .35rem; }
-    .field input {
+    .field input[type="text"], .field input[type="email"], .field input[type="password"] {
       width: 100%;
       padding: .65rem .9rem;
       border: 1.5px solid var(--border);
@@ -123,6 +132,9 @@
       outline: none;
     }
     .field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,219,.12); }
+    
+    .remember-me label { display: flex; align-items: center; gap: 0.5rem; font-weight: 400; font-size: 0.85rem; cursor: pointer; }
+    .remember-me input { cursor: pointer; }
 
     .btn {
       width: 100%;
@@ -262,11 +274,10 @@
 </head>
 <body>
 
-<!-- ══ AUTH ══ -->
 <div id="auth-screen">
   <header class="anim">
     <div class="logo-badge"><span class="dot"></span>EIPICO · Business Excellence</div>
-    <h1>🌍 To-Market Dashboard 2026</h1>
+    <h1><img src="eipico-logo.jpg" alt="EIPICO Logo" class="inline-logo"> To-Market Dashboard 2026</h1>
     <p class="subtitle">Sign in to access the dashboard</p>
   </header>
   <div class="auth-card">
@@ -276,32 +287,36 @@
     </div>
 
     <div class="auth-form active" id="form-login">
-      <div class="field"><label>Username</label><input type="text" id="login-user" placeholder="Enter username" /></div>
+      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="yourname@eipico.net" /></div>
       <div class="field"><label>Password</label><input type="password" id="login-pass" placeholder="Enter password" /></div>
+      <div class="field remember-me">
+        <label>
+          <input type="checkbox" id="login-remember" checked />
+          Remember me
+        </label>
+      </div>
       <div class="msg" id="login-msg"></div>
-      <button class="btn btn-primary" onclick="doLogin()">Sign In →</button>
+      <button class="btn btn-primary" onclick="window.doLogin()">Sign In →</button>
     </div>
 
     <div class="auth-form" id="form-register">
       <div class="field"><label>Username</label><input type="text" id="reg-user" placeholder="Choose a username" /></div>
-      <div class="field"><label>Company Email</label><input type="email" id="reg-email" placeholder="yourname@eipico.com" /></div>
+      <div class="field"><label>Company Email</label><input type="email" id="reg-email" placeholder="yourname@eipico.net" /></div>
       <div class="field"><label>Password</label><input type="password" id="reg-pass" placeholder="Choose a password" /></div>
       <div class="field"><label>Confirm Password</label><input type="password" id="reg-pass2" placeholder="Repeat password" /></div>
       <div class="msg" id="reg-msg"></div>
-      <button class="btn btn-primary" onclick="doRegister()">Request Access →</button>
+      <button class="btn btn-primary" onclick="window.doRegister()">Request Access →</button>
     </div>
   </div>
 </div>
 
-<!-- ══ PENDING ══ -->
 <div id="pending-screen">
   <div class="big-icon">⏳</div>
   <h2>Awaiting Approval</h2>
   <p>Your registration is pending admin approval. Please check back later.</p>
-  <button class="btn btn-outline" style="margin-top:.5rem" onclick="showAuth()">← Back to Sign In</button>
+  <button class="btn btn-outline" style="margin-top:.5rem" onclick="window.doLogout()">← Sign Out</button>
 </div>
 
-<!-- ══ ADMIN ══ -->
 <div id="admin-screen">
   <div class="admin-header anim">
     <div>
@@ -309,8 +324,8 @@
       <h1>👤 User Management</h1>
     </div>
     <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-      <button class="btn btn-outline" style="width:auto;padding:.55rem 1.2rem" onclick="showDash()">View Dashboard →</button>
-      <button class="btn btn-danger"  style="width:auto;padding:.55rem 1.2rem" onclick="doLogout()">Sign Out</button>
+      <button class="btn btn-outline" style="width:auto;padding:.55rem 1.2rem" onclick="window.showDash()">View Dashboard →</button>
+      <button class="btn btn-danger"  style="width:auto;padding:.55rem 1.2rem" onclick="window.doLogout()">Sign Out</button>
     </div>
   </div>
 
@@ -328,16 +343,16 @@
   </div>
 </div>
 
-<!-- ══ DASHBOARD ══ -->
 <div id="dashboard-screen">
   <header class="anim">
     <div class="logo-badge"><span class="dot"></span>EIPICO · Business Excellence</div>
-    <h1>🌍 To-Market Dashboard 2026</h1>
+    <h1><img src="eipico-logo.jpg" alt="EIPICO Logo" class="inline-logo"> To-Market Dashboard 2026</h1>
     <p style="margin-top:.4rem;color:var(--muted);font-size:1rem">Interactive Power BI Report</p>
+  </header>
 
   <div class="dash-topbar anim">
     <span class="welcome-pill" id="welcome-pill">👋 Welcome</span>
-    <button class="btn btn-outline" style="width:auto;padding:.5rem 1.1rem;font-size:.85rem" onclick="doLogout()">Sign Out</button>
+    <button class="btn btn-outline" style="width:auto;padding:.5rem 1.1rem;font-size:.85rem" onclick="window.doLogout()">Sign Out</button>
   </div>
 
   <section class="card anim">
@@ -362,7 +377,7 @@
         title="to-market 2025"
         src="https://app.fabric.microsoft.com/view?r=eyJrIjoiZTM2YjYxNzctZWQyMS00NGI0LTk4OGUtZDBiYWRmMGM4MDc2IiwidCI6IjZkYzNiZmNjLWI3ODYtNDYzYy05MDhmLWM1Y2U5YzhmNzA2YSJ9"
         allowfullscreen allow="fullscreen"
-        onload="iframeLoaded()" onerror="iframeFailed()">
+        onload="window.iframeLoaded()" onerror="window.iframeFailed()">
       </iframe>
     </div>
   </section>
@@ -371,31 +386,17 @@
 <footer>© 2026 Bussiness-Excellence Department@EIPICO — All rights reserved</footer>
 
 <script>
-  const ADMIN       = { username: 'Hamdoon', password: 'ada3door' };
-  const STORAGE_KEY = 'eipico_users';
-  const SESSION_KEY = 'eipico_session';
-
-  function getUsers()       { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-  function saveUsers(u)     { localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
-  function getSession()     { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null'); }
-  function setSession(s)    { sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
-  function clearSession()   { sessionStorage.removeItem(SESSION_KEY); }
-
-  function show(id) {
-    ['auth-screen','pending-screen','admin-screen','dashboard-screen'].forEach(s => {
-      document.getElementById(s).style.display = (s === id) ? 'flex' : 'none';
-    });
-  }
-
-  function showAuth()  { show('auth-screen'); }
-  function showDash()  { show('dashboard-screen'); startIframeTimer(); }
-  function showAdmin() { show('admin-screen'); renderAdminLists(); }
-
   function switchTab(tab) {
     document.querySelectorAll('.auth-tab').forEach((t,i) =>
       t.classList.toggle('active', (i===0 && tab==='login') || (i===1 && tab==='register')));
     document.getElementById('form-login').classList.toggle('active', tab==='login');
     document.getElementById('form-register').classList.toggle('active', tab==='register');
+  }
+
+  function show(id) {
+    ['auth-screen','pending-screen','admin-screen','dashboard-screen'].forEach(s => {
+      document.getElementById(s).style.display = (s === id) ? 'flex' : 'none';
+    });
   }
 
   function showMsg(id, text, type) {
@@ -404,75 +405,198 @@
     el.className = `msg ${type} show`;
   }
 
-  function doLogin() {
-    const u = document.getElementById('login-user').value.trim();
-    const p = document.getElementById('login-pass').value;
-    if (!u || !p) { showMsg('login-msg','Please fill in all fields.','error'); return; }
-
-    if (u === ADMIN.username && p === ADMIN.password) {
-      setSession({ username: u, role: 'admin' });
-      showAdmin(); return;
-    }
-
-    const user = getUsers().find(x => x.username === u && x.password === p);
-    if (!user) { showMsg('login-msg','Incorrect username or password.','error'); return; }
-    if (user.status === 'pending')  { showMsg('login-msg','Your account is awaiting admin approval.','info'); return; }
-    if (user.status === 'rejected') { showMsg('login-msg','Your access request was rejected. Contact admin.','error'); return; }
-
-    setSession({ username: u, role: 'user' });
-    document.getElementById('welcome-pill').textContent = `👋 Welcome, ${user.username}`;
-    showDash();
+  window.showDash = function() {
+    show('dashboard-screen');
+    window.startIframeTimer();
   }
 
-  function doRegister() {
+  window.iframeLoaded = function() { document.getElementById('loader').classList.add('hidden'); }
+  window.iframeFailed = function() {
+    document.getElementById('loader').classList.add('hidden');
+    document.getElementById('pbi').style.display = 'none';
+    document.getElementById('error-banner').classList.add('show');
+  }
+  window.startIframeTimer = function() {
+    setTimeout(() => {
+      if (!document.getElementById('loader').classList.contains('hidden')) window.iframeFailed();
+    }, 15000);
+  }
+</script>
+
+<script type="module">
+  // Import Firebase Core, Auth, and Firestore
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence
+  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  import { 
+    getFirestore, 
+    doc, 
+    setDoc, 
+    getDoc, 
+    collection, 
+    getDocs, 
+    updateDoc, 
+    deleteDoc 
+  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB-uY3a89crvxT7vTtU_le3vHsNp6d5KvY",
+    authDomain: "to-market-dashboard.firebaseapp.com",
+    projectId: "to-market-dashboard",
+    storageBucket: "to-market-dashboard.firebasestorage.app",
+    messagingSenderId: "67062404616",
+    appId: "1:67062404616:web:45fc75d21b59888d1de3bd",
+    measurementId: "G-BC5X497L34"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth();
+  const db = getFirestore(app);
+
+  // Set the email address that acts as the main admin
+  const ADMIN_EMAIL = "admin@eipico.net"; 
+
+  // --- AUTHENTICATION STATE OBSERVER ---
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // User is signed in. Let's check their status in the database.
+      if (user.email === ADMIN_EMAIL) {
+        show('admin-screen');
+        renderAdminLists();
+      } else {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          if (userData.status === 'approved') {
+            document.getElementById('welcome-pill').textContent = `👋 Welcome, ${userData.username}`;
+            window.showDash();
+          } else if (userData.status === 'pending') {
+            show('pending-screen');
+          } else if (userData.status === 'rejected') {
+             signOut(auth);
+             show('auth-screen');
+             showMsg('login-msg', 'Your access request was rejected. Contact admin.', 'error');
+          }
+        } else {
+          // If no doc exists but they are logged in, just sign out to be safe
+          signOut(auth);
+          show('auth-screen');
+        }
+      }
+    } else {
+      // No user is signed in.
+      show('auth-screen');
+    }
+  });
+
+  // --- LOGIN LOGIC ---
+  window.doLogin = async function() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-pass').value;
+    const rememberMe = document.getElementById('login-remember').checked;
+
+    if (!email || !pass) { 
+      showMsg('login-msg', 'Please fill in all fields.', 'error'); 
+      return; 
+    }
+
+    try {
+      // Set persistence based on checkbox
+      const persistenceType = rememberMe ? browserLocalPersistence : browserSessionPersistence;
+      await setPersistence(auth, persistenceType);
+
+      // Sign in
+      await signInWithEmailAndPassword(auth, email, pass);
+      // onAuthStateChanged will handle the routing!
+    } catch (error) {
+      showMsg('login-msg', 'Incorrect email or password.', 'error');
+      console.error(error);
+    }
+  };
+
+  // --- REGISTRATION LOGIC ---
+  window.doRegister = async function() {
     const u     = document.getElementById('reg-user').value.trim();
     const email = document.getElementById('reg-email').value.trim();
     const p     = document.getElementById('reg-pass').value;
     const p2    = document.getElementById('reg-pass2').value;
 
     if (!u||!email||!p||!p2) { showMsg('reg-msg','Please fill in all fields.','error'); return; }
-    if (!email.includes('@'))  { showMsg('reg-msg','Please enter a valid email address.','error'); return; }
+    if (!email.endsWith('@eipico.net')) { showMsg('reg-msg','Please use a valid @eipico.net email address.','error'); return; }
     if (p !== p2)              { showMsg('reg-msg','Passwords do not match.','error'); return; }
-    if (p.length < 4)          { showMsg('reg-msg','Password must be at least 4 characters.','error'); return; }
-    if (u === ADMIN.username)  { showMsg('reg-msg','That username is not available.','error'); return; }
+    if (p.length < 6)          { showMsg('reg-msg','Password must be at least 6 characters.','error'); return; }
 
-    const users = getUsers();
-    if (users.find(x => x.username === u)) { showMsg('reg-msg','Username already taken.','error'); return; }
+    try {
+      // Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, p);
+      const user = userCredential.user;
 
-    users.push({ username: u, email, password: p, status: 'pending', registeredAt: new Date().toLocaleString() });
-    saveUsers(users);
-    showMsg('reg-msg','✅ Request sent! Awaiting admin approval.','success');
-    ['reg-user','reg-email','reg-pass','reg-pass2'].forEach(id => document.getElementById(id).value='');
-  }
+      // Save additional user info and "pending" status to Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        username: u,
+        email: email,
+        status: 'pending',
+        registeredAt: new Date().toLocaleString()
+      });
 
-  function doLogout() { clearSession(); showAuth(); }
+      // Show success and clear form
+      showMsg('reg-msg','✅ Request sent! Awaiting admin approval.','success');
+      ['reg-user','reg-email','reg-pass','reg-pass2'].forEach(id => document.getElementById(id).value='');
+      
+      // onAuthStateChanged will automatically pick up the login and move them to 'pending' screen
 
-  function approveUser(username) {
-    const users = getUsers();
-    const u = users.find(x => x.username === username);
-    if (u) u.status = 'approved';
-    saveUsers(users); renderAdminLists();
-  }
-  function rejectUser(username) {
-    const users = getUsers();
-    const u = users.find(x => x.username === username);
-    if (u) u.status = 'rejected';
-    saveUsers(users); renderAdminLists();
-  }
-  function deleteUser(username) {
-    if (!confirm(`Delete user "${username}"?`)) return;
-    saveUsers(getUsers().filter(x => x.username !== username));
-    renderAdminLists();
-  }
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        showMsg('reg-msg','Email already registered.','error');
+      } else {
+        showMsg('reg-msg', error.message, 'error');
+      }
+    }
+  };
 
-  function renderAdminLists() {
-    const users    = getUsers();
-    const pending  = users.filter(x => x.status==='pending');
-    const approved = users.filter(x => x.status==='approved');
-    const rejected = users.filter(x => x.status==='rejected');
-    document.getElementById('pending-list').innerHTML  = renderRows(pending,  'pending');
-    document.getElementById('approved-list').innerHTML = renderRows(approved, 'approved');
-    document.getElementById('rejected-list').innerHTML = renderRows(rejected, 'rejected');
+  // --- LOGOUT LOGIC ---
+  window.doLogout = function() {
+    signOut(auth).then(() => {
+      show('auth-screen');
+    }).catch((error) => {
+      console.error("Sign out error", error);
+    });
+  };
+
+  // --- ADMIN PANEL LOGIC (FIRESTORE) ---
+  async function renderAdminLists() {
+    const pendingList = [];
+    const approvedList = [];
+    const rejectedList = [];
+
+    try {
+      const querySnapshot = await getDocs(collection(db, "users"));
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        data.uid = doc.id; // Save the document ID so we can update it later
+        
+        if (data.status === 'pending') pendingList.push(data);
+        if (data.status === 'approved') approvedList.push(data);
+        if (data.status === 'rejected') rejectedList.push(data);
+      });
+
+      document.getElementById('pending-list').innerHTML  = renderRows(pendingList,  'pending');
+      document.getElementById('approved-list').innerHTML = renderRows(approvedList, 'approved');
+      document.getElementById('rejected-list').innerHTML = renderRows(rejectedList, 'rejected');
+    } catch (error) {
+      console.error("Error fetching users: ", error);
+      document.getElementById('pending-list').innerHTML = `<div class="empty-state">Error loading users. Check Firestore permissions.</div>`;
+    }
   }
 
   function renderRows(users, type) {
@@ -484,44 +608,42 @@
           <span>${u.email} · ${u.registeredAt}</span>
         </div>
         <div class="user-actions">
-          ${type==='pending'  ? `<button class="btn btn-success btn-sm" onclick="approveUser('${u.username}')">Approve</button>
-                                 <button class="btn btn-danger  btn-sm" onclick="rejectUser('${u.username}')">Reject</button>` : ''}
-          ${type==='approved' ? `<button class="btn btn-danger  btn-sm" onclick="rejectUser('${u.username}')">Revoke</button>` : ''}
-          ${type==='rejected' ? `<button class="btn btn-success btn-sm" onclick="approveUser('${u.username}')">Approve</button>` : ''}
-          <button class="btn btn-outline btn-sm" onclick="deleteUser('${u.username}')">Delete</button>
+          ${type==='pending'  ? `<button class="btn btn-success btn-sm" onclick="window.updateStatus('${u.uid}', 'approved')">Approve</button>
+                                 <button class="btn btn-danger  btn-sm" onclick="window.updateStatus('${u.uid}', 'rejected')">Reject</button>` : ''}
+          ${type==='approved' ? `<button class="btn btn-danger  btn-sm" onclick="window.updateStatus('${u.uid}', 'rejected')">Revoke</button>` : ''}
+          ${type==='rejected' ? `<button class="btn btn-success btn-sm" onclick="window.updateStatus('${u.uid}', 'approved')">Approve</button>` : ''}
+          <button class="btn btn-outline btn-sm" onclick="window.deleteUser('${u.uid}')">Delete</button>
         </div>
       </div>`).join('');
   }
 
-  function iframeLoaded() { document.getElementById('loader').classList.add('hidden'); }
-  function iframeFailed() {
-    document.getElementById('loader').classList.add('hidden');
-    document.getElementById('pbi').style.display = 'none';
-    document.getElementById('error-banner').classList.add('show');
-  }
-  function startIframeTimer() {
-    setTimeout(() => {
-      if (!document.getElementById('loader').classList.contains('hidden')) iframeFailed();
-    }, 15000);
-  }
+  window.updateStatus = async function(uid, newStatus) {
+    try {
+      const userRef = doc(db, "users", uid);
+      await updateDoc(userRef, { status: newStatus });
+      renderAdminLists(); // Refresh lists
+    } catch (error) {
+      console.error("Error updating status: ", error);
+      alert("Failed to update status.");
+    }
+  };
 
+  window.deleteUser = async function(uid) {
+    if (!confirm(`Delete this user record? (Note: This deletes their database profile, but they must be manually deleted from Firebase Auth console)`)) return;
+    try {
+      await deleteDoc(doc(db, "users", uid));
+      renderAdminLists(); // Refresh lists
+    } catch (error) {
+      console.error("Error deleting user: ", error);
+      alert("Failed to delete user.");
+    }
+  };
+
+  // Keyboard support for Enter key
   document.addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
-    document.getElementById('form-login').classList.contains('active') ? doLogin() : doRegister();
+    document.getElementById('form-login').classList.contains('active') ? window.doLogin() : window.doRegister();
   });
-
-  // Init
-  (function() {
-    const session = getSession();
-    if (!session) { showAuth(); return; }
-    if (session.role === 'admin') { showAdmin(); return; }
-    const user = getUsers().find(x => x.username === session.username);
-    if (user && user.status === 'approved') {
-      document.getElementById('welcome-pill').textContent = `👋 Welcome, ${user.username}`;
-      showDash();
-    } else { clearSession(); showAuth(); }
-  })();
 </script>
-
 </body>
 </html>
