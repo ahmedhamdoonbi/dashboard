@@ -1,298 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>To-Market Dashboard — EIPICO</title>
+<!-- Firebase SDK Modules -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  // 1. Configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB-uY3a89crvxT7vTtU_le3vHsNp6d5KvY",
+    authDomain: "to-market-dashboard.firebaseapp.com",
+    projectId: "to-market-dashboard"
+  };
 
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
+  // 2. Initialize
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-:root{
-  --blue:#1a56db;
-  --bg:#f0f4fc;
-  --card:#fff;
-  --text:#1e293b;
-  --muted:#64748b;
-  --border:#e2e8f0;
-}
+  const ADMIN_EMAIL = "ahmd.hamdoon@gmail.com";
+  const messageEl = document.getElementById('message');
+  const adminPanel = document.getElementById('adminPanel');
+  const pendingDiv = document.getElementById('pending');
 
-body{
-  font-family:'DM Sans',sans-serif;
-  background:var(--bg);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  padding:20px;
-}
+  // --- UI Logic ---
+  window.showTab = (tab) => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+    
+    if(tab === 'login') {
+      document.getElementById('login').classList.add('active');
+      document.querySelectorAll('.tab')[0].classList.add('active');
+    } else {
+      document.getElementById('register').classList.add('active');
+      document.querySelectorAll('.tab')[1].classList.add('active');
+    }
+  };
 
-.container{
-  width:100%;
-  max-width:420px;
-}
+  // --- Auth Logic ---
 
-.header{
-  text-align:center;
-  margin-bottom:20px;
-}
-
-.logo{
-  font-size:20px;
-  font-weight:700;
-  color:var(--blue);
-}
-
-.title{
-  font-size:26px;
-  font-weight:700;
-  margin-top:5px;
-}
-
-.subtitle{
-  color:var(--muted);
-  font-size:14px;
-}
-
-.card{
-  background:var(--card);
-  border-radius:16px;
-  padding:25px;
-  box-shadow:0 10px 40px rgba(0,0,0,.1);
-}
-
-.tabs{
-  display:flex;
-  margin-bottom:20px;
-  border-bottom:2px solid var(--border);
-}
-
-.tab{
-  flex:1;
-  text-align:center;
-  padding:10px;
-  cursor:pointer;
-  font-weight:600;
-  color:var(--muted);
-}
-
-.tab.active{
-  color:var(--blue);
-  border-bottom:2px solid var(--blue);
-}
-
-.form{
-  display:none;
-  flex-direction:column;
-  gap:10px;
-}
-
-.form.active{
-  display:flex;
-}
-
-input{
-  padding:12px;
-  border-radius:8px;
-  border:1px solid var(--border);
-}
-
-button{
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  background:var(--blue);
-  color:#fff;
-  font-weight:600;
-  cursor:pointer;
-}
-
-#message{
-  margin-top:10px;
-  text-align:center;
-  font-size:14px;
-}
-
-.admin{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#fff;
-  padding:15px;
-  border-radius:12px;
-  width:250px;
-  box-shadow:0 10px 30px rgba(0,0,0,.2);
-  display:none;
-}
-
-.user{
-  background:#f1f5f9;
-  padding:8px;
-  margin:5px 0;
-  border-radius:6px;
-  display:flex;
-  justify-content:space-between;
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-  <div class="header">
-    <div class="logo">EIPICO Logo</div>
-    <div class="title">To-Market Dashboard</div>
-    <div class="subtitle">Secure access required</div>
-  </div>
-
-  <div class="card">
-
-    <div class="tabs">
-      <div class="tab active" onclick="showTab('login')">Sign In</div>
-      <div class="tab" onclick="showTab('register')">Register</div>
-    </div>
-
-    <div id="login" class="form active">
-      <input id="loginEmail" placeholder="Email">
-      <input id="loginPass" type="password" placeholder="Password">
-      <button onclick="login()">Sign In</button>
-    </div>
-
-    <div id="register" class="form">
-      <input id="regEmail" placeholder="Email">
-      <input id="regPass" type="password" placeholder="Password">
-      <button onclick="register()">Request Access</button>
-    </div>
-
-    <div id="message"></div>
-
-  </div>
-</div>
-
-<div id="adminPanel" class="admin">
-  <h4>Pending</h4>
-  <div id="pending"></div>
-</div>
-
-<!-- Firebase (compat) -->
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyB-uY3a89crvxT7vTtU_le3vHsNp6d5KvY",
-  authDomain: "to-market-dashboard.firebaseapp.com",
-  projectId: "to-market-dashboard"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// 👇 حط إيميلك هنا
-const ADMIN_EMAIL = "ahmd.hamdoon@gmail.com";
-
-// UI tabs
-function showTab(tab){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.form').forEach(f=>f.classList.remove('active'));
-
-  if(tab==='login'){
-    document.getElementById('login').classList.add('active');
-    document.querySelectorAll('.tab')[0].classList.add('active');
-  }else{
-    document.getElementById('register').classList.add('active');
-    document.querySelectorAll('.tab')[1].classList.add('active');
-  }
-}
-
-// Register
-function register(){
-  const email = regEmail.value;
-  const pass = regPass.value;
-
-  auth.createUserWithEmailAndPassword(email,pass)
-    .then(user=>{
-      return db.collection("users").doc(user.user.uid).set({
-        email:email,
-        approved:false
+  // Register Function
+  window.register = async () => {
+    const email = document.getElementById('regEmail').value;
+    const pass = document.getElementById('regPass').value;
+    
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        email: email,
+        approved: false,
+        role: "user"
       });
-    })
-    .then(()=>{
-      message.innerText="⏳ Waiting for approval";
-    })
-    .catch(e=>message.innerText=e.message);
-}
+      messageEl.innerText = "⏳ Request sent. Waiting for admin approval.";
+    } catch (e) {
+      messageEl.innerText = "❌ Error: " + e.message;
+    }
+  };
 
-// Login
-function login(){
-  const email = loginEmail.value;
-  const pass = loginPass.value;
+  // Login Function
+  window.login = async () => {
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPass').value;
 
-  auth.signInWithEmailAndPassword(email,pass)
-    .then(user=>{
-      const uid = user.user.uid;
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+      const user = userCredential.user;
 
-      if(email === ADMIN_EMAIL){
-        message.innerText="👑 Admin Mode";
-        adminPanel.style.display="block";
+      if (email === ADMIN_EMAIL) {
+        messageEl.innerText = "👑 Admin Access Granted";
+        adminPanel.style.display = "block";
         loadPending();
       } else {
-
-        db.collection("users").doc(uid).get()
-        .then(doc => {
-
-          // 👇 لو مش موجود نضيفه
-          if(!doc.exists){
-            db.collection("users").doc(uid).set({
-              email: email,
-              approved: false
-            }).then(()=>{
-              message.innerText="⏳ Waiting for approval";
-            });
-          }
-
-          else if(doc.data().approved){
-            message.innerText="✅ Access granted";
-          } else {
-            message.innerText="❌ Not approved yet";
-          }
-
-        });
-
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        
+        if (!userDoc.exists()) {
+          // Auto-create record if missing
+          await setDoc(doc(db, "users", user.uid), { email: email, approved: false });
+          messageEl.innerText = "⏳ Status: Pending Approval";
+        } else if (userDoc.data().approved) {
+          messageEl.innerText = "✅ Access Granted! Redirecting...";
+          // OPTIONAL: window.location.href = "dashboard.html"; 
+        } else {
+          messageEl.innerText = "❌ Your account is still pending approval.";
+        }
       }
-    })
-    .catch(e=>message.innerText=e.message);
-}
+    } catch (e) {
+      messageEl.innerText = "❌ Login Failed: " + e.message;
+    }
+  };
 
-// Admin load
-function loadPending(){
-  pending.innerHTML="";
-  db.collection("users").get().then(snapshot=>{
-    snapshot.forEach(doc=>{
-      if(!doc.data().approved){
-        const div=document.createElement("div");
-        div.className="user";
-        div.innerHTML=`
-          ${doc.data().email}
-          <button onclick="approve('${doc.id}')">✔</button>
+  // --- Admin Logic ---
+
+  window.loadPending = async () => {
+    pendingDiv.innerHTML = "Loading...";
+    try {
+      const q = query(collection(db, "users"), where("approved", "==", false));
+      const querySnapshot = await getDocs(q);
+      pendingDiv.innerHTML = "";
+      
+      querySnapshot.forEach((userDoc) => {
+        const data = userDoc.data();
+        const div = document.createElement("div");
+        div.className = "user";
+        div.innerHTML = `
+          <span>${data.email}</span>
+          <button onclick="approveUser('${userDoc.id}')">✔</button>
         `;
-        pending.appendChild(div);
-      }
-    });
-  });
-}
+        pendingDiv.appendChild(div);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
-// Approve
-function approve(id){
-  db.collection("users").doc(id).update({approved:true})
-  .then(()=>loadPending());
-}
+  window.approveUser = async (id) => {
+    try {
+      await updateDoc(doc(db, "users", id), { approved: true });
+      loadPending();
+    } catch (e) {
+      alert("Error approving user");
+    }
+  };
 </script>
-
-</body>
-</html>
