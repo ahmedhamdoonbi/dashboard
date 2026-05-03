@@ -403,8 +403,14 @@
         </div>
 
         <div id="dashboard" class="dashboard">
-            <div class="dashboard-sidebar">
+            <div class="dashboard-sidebar" id="adminSidebar">
                 <h2>👤 User Management</h2>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-label">🟢 Online Users</div>
+                    <div id="onlineList" style="min-height: 40px;"></div>
+                </div>
+
                 <div class="sidebar-section">
                     <div class="sidebar-label">⏳ Pending Approval</div>
                     <div id="pendingList"></div>
