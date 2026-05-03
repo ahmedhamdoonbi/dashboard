@@ -231,9 +231,87 @@
             background: transparent;
         }
 
+        .dashboard.active.admin-view {
+            grid-template-columns: 350px 1fr;
+        }
+
         .dashboard-sidebar {
             display: none;
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+            color: white;
+            padding: 40px 20px;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            height: 100%;
+            flex-direction: column;
+            width: 350px;
         }
+
+        .dashboard-sidebar.show {
+            display: flex;
+        }
+
+        .dashboard-sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            margin-bottom: 12px;
+        }
+
+        .user-item {
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .approve-btn { background: #10b981; }
+        .approve-btn:hover { background: #059669; }
+        .reject-btn { background: #ef4444; }
+        .reject-btn:hover { background: #dc2626; }
+        .delete-btn { background: #6b7280; }
+        .delete-btn:hover { background: #4b5563; }
 
         .dashboard-main {
             padding: 0;
@@ -242,6 +320,10 @@
             height: 100%;
             display: flex;
             flex-direction: column;
+        }
+
+        .dashboard-main.hidden {
+            display: none;
         }
 
         .dashboard-header {
@@ -601,6 +683,10 @@
         }
 
         function logout() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (currentUser) {
+                removeOnlineUser(currentUser);
+            }
             sessionStorage.clear();
             location.reload();
         }
@@ -608,6 +694,7 @@
         function checkAuth() {
             const currentUser = sessionStorage.getItem('currentUser');
             const userStatus = sessionStorage.getItem('userStatus');
+            const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
 
             if (!currentUser) {
                 document.getElementById('authScreen').style.display = 'block';
@@ -632,14 +719,68 @@
                 const username = currentUser.split('@')[0];
                 document.getElementById('welcomeName').textContent = username;
                 
-                if (sessionStorage.getItem('isAdmin') === 'true') {
+                if (isAdmin) {
+                    // Admin view - show sidebar, hide Power BI
+                    document.getElementById('adminSidebar').classList.add('show');
+                    document.getElementById('dashboard').classList.add('admin-view');
+                    document.querySelector('.dashboard-main').classList.add('hidden');
+                    
+                    // Add to online users
+                    addOnlineUser(currentUser);
                     refreshAdminLists();
+                } else {
+                    // User view - hide sidebar, show Power BI
+                    document.getElementById('adminSidebar').classList.remove('show');
+                    document.getElementById('dashboard').classList.remove('admin-view');
+                    document.querySelector('.dashboard-main').classList.remove('hidden');
+                    
+                    // Add to online users
+                    addOnlineUser(currentUser);
                 }
             }
         }
 
+        function addOnlineUser(email) {
+            const onlineUsers = JSON.parse(sessionStorage.getItem('onlineUsers') || '[]');
+            if (!onlineUsers.includes(email)) {
+                onlineUsers.push(email);
+                sessionStorage.setItem('onlineUsers', JSON.stringify(onlineUsers));
+            }
+            refreshOnlineUsers();
+        }
+
+        function removeOnlineUser(email) {
+            const onlineUsers = JSON.parse(sessionStorage.getItem('onlineUsers') || '[]');
+            const index = onlineUsers.indexOf(email);
+            if (index > -1) {
+                onlineUsers.splice(index, 1);
+                sessionStorage.setItem('onlineUsers', JSON.stringify(onlineUsers));
+            }
+            refreshOnlineUsers();
+        }
+
+        function refreshOnlineUsers() {
+            const onlineUsers = JSON.parse(sessionStorage.getItem('onlineUsers') || '[]');
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            
+            const onlineList = document.getElementById('onlineList');
+            if (!onlineList) return;
+            
+            onlineList.innerHTML = onlineUsers.map(email => {
+                const user = users[email];
+                const username = email.split('@')[0];
+                return `
+                    <div class="user-item">
+                        <div class="user-name">🟢 ${username}</div>
+                        <div class="user-email">${email}</div>
+                    </div>
+                `;
+            }).join('') || '<div style="color: #999; font-size: 12px;">No users online</div>';
+        }
+
         function refreshAdminLists() {
             const users = JSON.parse(localStorage.getItem('users') || '{}');
+
             const pending = Object.entries(users).filter(([_, u]) => u.status === 'pending');
             const approved = Object.entries(users).filter(([_, u]) => u.status === 'approved');
             const rejected = Object.entries(users).filter(([_, u]) => u.status === 'rejected');
@@ -674,6 +815,8 @@
                     </div>
                 </div>
             `).join('');
+            
+            refreshOnlineUsers();
         }
 
         function approveUser(email) {
