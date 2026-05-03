@@ -189,19 +189,19 @@
 
         <div class="tab-content active">
             <div class="form-group">
-                <label>Email / Username</label>
-                <input type="text" placeholder="Enter gmail address" id="username">
+                <label>Email Address</label>
+                <input type="text" placeholder="Enter EIPICO email or Admin Gmail" id="username">
             </div>
             <div class="form-group">
                 <label>Password</label>
                 <input type="password" placeholder="Enter password">
             </div>
             <button class="btn" id="loginBtn">Sign In</button>
-            <div class="error-message" id="loginError">Access denied. Only the administrator can log in.</div>
+            <div class="error-message" id="loginError">Access denied. Please use a valid EIPICO email or the administrator account.</div>
         </div>
 
         <div class="tab-content">
-            <p>If you are experiencing issues accessing the system, please contact your department administrator.</p>
+            <p>If you are experiencing issues accessing the system, please contact the Business Excellence Department administrator.</p>
         </div>
     </div>
 
@@ -254,8 +254,11 @@
             loginBtn.addEventListener('click', () => {
                 const enteredUsername = usernameInput.value.trim().toLowerCase();
 
-                // Verification check for the specific admin email
-                if (enteredUsername === 'ahmd.hamdoon@gmail.com') {
+                // Verification check: Allow the specific admin Gmail OR any EIPICO corporate email
+                const isAdmin = enteredUsername === 'ahmd.hamdoon@gmail.com';
+                const isEipicoUser = enteredUsername.includes('@eipico.');
+
+                if (isAdmin || isEipicoUser) {
                     loginError.style.display = 'none'; // Hide error if it was previously shown
                     
                     // Transition out the auth screen
@@ -270,7 +273,7 @@
                         document.body.style.padding = '40px 20px';
                     }, 300); // Wait for fade out
                 } else {
-                    // Show error message
+                    // Show error message for unauthorized emails
                     loginError.style.display = 'block';
                 }
             });
