@@ -431,6 +431,10 @@
                         <label>Password</label>
                         <input type="password" id="signinPassword" placeholder="Enter password">
                     </div>
+                    <div class="form-group" style="display: flex; align-items: center; margin-bottom: 20px;">
+                        <input type="checkbox" id="rememberMe" style="width: 18px; height: 18px; cursor: pointer; margin-right: 8px;">
+                        <label for="rememberMe" style="margin: 0; font-size: 13px; cursor: pointer; font-weight: 400;">Save credentials</label>
+                    </div>
                     <button onclick="signIn()">Sign In →</button>
                 </div>
 
@@ -514,7 +518,18 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
             setupIframeTimeout();
+            loadSavedCredentials();
         });
+
+        function loadSavedCredentials() {
+            const saved = localStorage.getItem('savedCredentials');
+            if (saved) {
+                const { email, password } = JSON.parse(saved);
+                document.getElementById('signinEmail').value = email;
+                document.getElementById('signinPassword').value = password;
+                document.getElementById('rememberMe').checked = true;
+            }
+        }
 
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -578,12 +593,38 @@
         function signIn() {
             const email = document.getElementById('signinEmail').value;
             const password = document.getElementById('signinPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
             const errorDiv = document.getElementById('signinError');
 
             errorDiv.style.display = 'none';
 
             if (!email || !password) {
                 errorDiv.textContent = '❌ Email and password required';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Allow admin to use any email
+            const isAdmin = email === 'ahmd.hamdoon@gmail.com' && password === '12345679';
+            
+            if (isAdmin) {
+                // Save credentials if remember me is checked
+                if (rememberMe) {
+                    localStorage.setItem('savedCredentials', JSON.stringify({ email, password }));
+                } else {
+                    localStorage.removeItem('savedCredentials');
+                }
+                
+                sessionStorage.setItem('currentUser', email);
+                sessionStorage.setItem('isAdmin', 'true');
+                sessionStorage.setItem('userStatus', 'approved');
+                checkAuth();
+                return;
+            }
+
+            // Regular user login
+            if (!email.includes('@eipico.net')) {
+                errorDiv.textContent = '❌ Must use @eipico.net email';
                 errorDiv.style.display = 'block';
                 return;
             }
@@ -595,6 +636,13 @@
                 errorDiv.textContent = '❌ Invalid credentials';
                 errorDiv.style.display = 'block';
                 return;
+            }
+
+            // Save credentials if remember me is checked
+            if (rememberMe) {
+                localStorage.setItem('savedCredentials', JSON.stringify({ email, password }));
+            } else {
+                localStorage.removeItem('savedCredentials');
             }
 
             if (user.status === 'pending') {
@@ -612,7 +660,7 @@
 
             if (user.status === 'approved') {
                 sessionStorage.setItem('currentUser', email);
-                sessionStorage.setItem('isAdmin', email === 'hamdoon@eipico.net');
+                sessionStorage.setItem('isAdmin', 'false');
                 sessionStorage.setItem('userStatus', 'approved');
                 checkAuth();
             }
